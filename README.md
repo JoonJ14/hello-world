@@ -1,2 +1,8 @@
 # hello-world
-my first repository on Github, everything from undergraduate, and BBOP lab work 
+my first repository on Github, everything from undergraduate-Biomedical Engineering, and BBOP lab work for analyzing Brainwaves 
+Electro Encephalogram, or EEG.
+
+I added all the codes from MIT Applied Data Science program, there are 3 big projects for 
+1. Exploratory Data Analysis: Marketting Analysis 
+2. Streeview House number recognition using Artificial Neural Network(ANN) and Convolutional Neural Network(CNN)
+3. Malaria Detection using Convolutional Neural Network for Cell Image Classification
