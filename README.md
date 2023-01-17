@@ -6,3 +6,6 @@ I added all the codes from MIT Applied Data Science program, there are 3 big pro
 1. Exploratory Data Analysis: Marketting Analysis 
 2. Streeview House number recognition using Artificial Neural Network(ANN) and Convolutional Neural Network(CNN)
 3. Malaria Detection using Convolutional Neural Network for Cell Image Classification
+
+I also added programming assignments for Linear Algebra for Machine Learning Course by 
+Imperial College London.
