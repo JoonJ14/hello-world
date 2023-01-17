@@ -1,5 +1,5 @@
 # hello-world
-my first repository on Github, everything from undergraduate-Biomedical Engineering, and BBOP lab work for analyzing Brainwaves 
+my first repository on Github, everything from undergraduate-Biomedical Engineering, and BBOP(Baby Brain Optimization Project) lab work for analyzing Brainwaves 
 Electro Encephalogram, or EEG.
 
 I added all the codes from MIT Applied Data Science program, there are 3 big projects for 
