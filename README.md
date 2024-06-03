@@ -1,6 +1,7 @@
 # hello-world
-my first repository on Github, everything from undergraduate-Biomedical Engineering, and BBOP(Baby Brain Optimization Project) lab work for analyzing Brainwaves 
-Electro Encephalogram, or EEG.
+my first repository on Github, everything from undergraduate-Biomedical Engineering at University of Miami. and so on in the future...
+
+Updated: BBOP(Baby Brain Optimization Project) lab work for analyzing Brainwaves Electro Encephalogram, or EEG. Only has the ones that are non proprietary
 
 I added all the codes from MIT Applied Data Science program, there are 3 big projects for 
 1. Exploratory Data Analysis: Marketting Analysis 
@@ -9,3 +10,6 @@ I added all the codes from MIT Applied Data Science program, there are 3 big pro
 
 I also added programming assignments for Linear Algebra for Machine Learning Course by 
 Imperial College London.
+
+Updated 6/3: Added all the codes from Master's in Data Analytics (Machine Learning, Neural Network, Protein Folding Capstone project, Quantum Computing/Quantum Chemistry, Natural Language Processing)
+
