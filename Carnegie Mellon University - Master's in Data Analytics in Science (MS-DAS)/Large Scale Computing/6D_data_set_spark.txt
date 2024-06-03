@@ -1,0 +1,193 @@
+import numpy as np
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.clustering import KMeans 
+from pyspark.ml.evaluation import ClusteringEvaluator 
+from pyspark.ml.feature import Normalizer 
+from pyspark.ml.feature import PCA 
+import matplotlib.pyplot as plt  
+
+# ignore this
+# for clusters in range(1,30):
+# 	model = KMeans.train(rdd2, clusters)
+# 	print (clusters, model.computeCost(rdd2))
+
+# for trials in range(10):
+# 	for clusters in range(1,30):
+# 		model = KMeans.train(rdd2,clusters)
+# 		cost = model.computeCost(rdd2)
+# 		centers = model.clusterCenters
+# 		if cost<1e+13:
+# 			print (clusters, cost)
+# 			for coords in centers:
+# 				print (int(coords[0]), int(coords[1]))
+# 			break
+#         break
+#     break
+# break
+
+
+# loading into rdd
+rdd1 = sc.textFile('space.dat')
+rdd2 = rdd1.map(lambda x: x.split(", "))
+rdd3 = rdd2.map(lambda x: [float(x[0]), float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5])])
+rdd3.take(4)
+rdd4 = rdd3.map(lambda x: [round(x[0], 2), round(x[1], 2), round(x[2], 2), round(x[3], 2), round(x[4], 2), round(x[5], 2)])
+rdd4.take(4)
+
+# converting to data frame
+spark_df = spark.createDataFrame(rdd4, ["one","two","three","four","five","six"])
+
+# Clustering
+vecassemble = VectorAssembler(inputCols = spark_df.columns, 
+                                outputCol='features')
+
+vecdata = vecassemble.transform(spark_df) 
+
+# K-means Silhouette Score
+evaluator = ClusteringEvaluator(predictionCol='prediction', 
+                                featuresCol='features',
+                                metricName='silhouette',  
+                                distanceMeasure='squaredEuclidean')
+
+silhouette_score = []
+# if i put 1 for i, it gives an error
+for i in range(2,15): 
+    kmeans = KMeans(featuresCol='features', k=i) 
+    model = kmeans.fit(vecdata) 
+    predictions = model.transform(vecdata) 
+    score = evaluator.evaluate(predictions) 
+    silhouette_score.append(score) 
+    print(f"Silhouette Score for k = {i} is {score}")
+    
+
+kmeans = KMeans(featuresCol='features',k=6) 
+model = kmeans.fit(vecdata) 
+clusterdata = model.transform(vecdata)
+
+
+# Cluster centers 
+centers = model.clusterCenters() 
+print("Cluster Centers: ") 
+for center in centers:
+    print(center)
+
+# PCA
+for k in range(6):
+
+    cluster = clusterdata.filter(clusterdata.prediction == k).select(spark_df.columns)
+    print(f"Cluster: {k}")
+
+    count = cluster.count()
+    print(f"Cluster count is {count}")
+
+    vecassemble = VectorAssembler(inputCols = cluster.columns, 
+                                    outputCol='features')
+
+    veccluster = vecassemble.transform(cluster)
+
+    normalize = Normalizer(inputCol="features",  
+                            outputCol="scaled",  
+                            p = 1) 
+
+    scalecluster = normalize.transform(veccluster) 
+
+    pca = PCA(k=6, inputCol= 'features', outputCol='pca')
+
+    model = pca.fit(scalecluster)
+
+    pca_df = model.transform(scalecluster)
+
+    count_pca = pca_df.count()
+    print(f"PCA count is {count_pca}")
+
+    exp_var = model.explainedVariance
+    print(f"Explained Variance is: {exp_var}")
+    
+    if k == 0:
+        clust_0 = cluster
+        pca_0 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+
+    elif k == 1:
+        clust_1 = cluster
+        pca_1 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+
+    elif k == 2:
+        clust_2 = cluster
+        pca_2 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+
+    elif k == 3:
+        clust_3 = cluster
+        pca_3 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+
+    elif k == 4:
+        clust_4 = cluster
+        pca_4 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+
+    else:
+        clust_5 = cluster
+        pca_5 = np.array(pca_df.rdd.map(lambda x: x.pca).collect())
+        
+# Visualization
+
+# Cluster 0 (3D)
+fig0 = plt.figure()
+ax0 = fig0.add_subplot(projection = "3d")
+ax0.scatter3D(pca_0[:,0], pca_0[:,1], pca_0[:,2], alpha = 0.5)
+ax0.set_xlabel("PC1")
+ax0.set_ylabel("PC2")
+ax0.set_zlabel("PC3")
+ax0.dist = 13
+plt.savefig("cluster0.png") 
+plt.clf()
+
+# Cluster 1 (6D)
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(projection = "3d")
+ax1.scatter3D(pca_1[:,0], pca_1[:,1], pca_1[:,2], alpha = 0.5)
+ax1.set_xlabel("PC1")
+ax1.set_ylabel("PC2")
+ax1.set_zlabel("PC3")
+ax1.dist = 13
+plt.savefig("cluster1.png")
+plt.clf()
+
+# Cluster 2 (2D)
+fig2 = plt.scatter(x = pca_2[:,0], y = pca_2[:,1], alpha = 0.5)
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.grid(which = "both")
+plt.minorticks_on()
+plt.savefig("cluster2.png")
+plt.clf()
+
+# Cluster 3 (6D)
+fig3 = plt.figure()
+ax3 = fig3.add_subplot(projection = "3d")
+ax3.scatter3D(pca_3[:,0], pca_3[:,1], pca_3[:,2], alpha = 0.5)
+ax3.set_xlabel("PC1")
+ax3.set_ylabel("PC2")
+ax3.set_zlabel("PC3")
+ax3.dist = 13
+plt.savefig("cluster3.png")
+plt.clf()
+
+# Cluster 4 (2D)
+fig4 = plt.scatter(x = pca_4[:,0], y = pca_4[:,1], alpha = 0.5)
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.grid(which = "both")
+plt.minorticks_on()
+plt.savefig("cluster4.png")
+plt.clf()
+
+# Cluster 5 (1D)
+plot_5 = np.array(clust_5.rdd.collect())
+fig5 = plt.figure()
+ax5 = fig5.add_subplot(projection = "3d")
+ax5.scatter3D(plot_5[:,0], plot_5[:,1], plot_5[:,2], alpha = 0.5)
+ax5.set_xlabel("1")
+ax5.set_ylabel("2")
+ax5.set_zlabel("3")
+ax5.dist = 13
+plt.savefig("cluster5.png")
+plt.clf()

@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Nov 27 17:00:22 2023
+
+@author: joonjung
+"""
+
+import tensorflow as tf
+
+from tensorflow.keras.models import Sequential
+
+from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, BatchNormalization, Dropout, Flatten, LeakyReLU
+
+from tensorflow.keras.losses import categorical_crossentropy
+
+from tensorflow.keras.losses import sparse_categorical_crossentropy
+
+from tensorflow.keras.optimizers import Adam
+
+from tensorflow.keras.utils import to_categorical
+
+import matplotlib.pyplot as plt
+
+# Loading in the fashion data set
+mnist = tf.keras.datasets.fashion_mnist
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+
+train_images = train_images.reshape(60000, 28, 28, 1)
+test_images = test_images.reshape(10000, 28, 28, 1)
+train_images, test_images = train_images/255, test_images/255
+
+def cnn_model_class():
+
+    model = Sequential() 
+
+    model.add(Conv2D(filters = 32, kernel_size = (3,3), padding = 'same', activation = 'relu', input_shape = (28, 28, 1)))
+
+    model.add(Conv2D(filters = 64, kernel_size = (3,3), padding = 'same', activation = 'relu'))
+
+    model.add(MaxPool2D(2,2))
+
+    model.add(Dropout(0.5))
+
+    model.add(Flatten())
+
+    model.add(Dense(128, activation = 'relu'))
+
+    model.add(Dropout(0.5))
+
+    model.add(Dense(10, activation = 'softmax'))
+    
+    # Compile the model
+
+    model.compile(loss = 'sparse_categorical_crossentropy', optimizer = tf.keras.optimizers.Adam(0.001), metrics = ['accuracy'])
+    
+    return model
+
+
+# To show the layers
+model_class = cnn_model_class()
+model_class.summary()
+
+# Fitting the model
+history_model_class = model_class.fit(train_images, train_labels, batch_size = 32, verbose = 1, epochs = 20, validation_data=(test_images, test_labels))
+
+# Plotting the accuracies
+dict_hist = history_model_class.history
+list_ep = [i for i in range(1, 21)]
+plt.figure(figsize = (8, 8))
+plt.plot(list_ep, dict_hist['accuracy'], ls = '--', label = 'accuracy')
+plt.plot(list_ep, dict_hist['val_accuracy'], ls = '--', label = 'val_accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epochs')
+plt.legend()
+plt.show()
+
+
+
